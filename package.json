@@ -4,7 +4,7 @@
   "description": "Adapter for Vue.js Micro Frontends that are run inside ILC",
   "main": "lib/single-spa-vue.js",
   "scripts": {
-    "prepublishOnly": "npm build",
+    "prepublishOnly": "npm run build",
     "build": "rimraf lib && rollup -c",
     "test": "jest",
     "prettier": "prettier --write './**'",
