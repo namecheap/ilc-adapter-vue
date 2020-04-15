@@ -8,13 +8,14 @@ describe("single-spa-vue", () => {
 
   beforeEach(() => {
     Vue = jest.fn();
+    Vue.config = {};
 
     Vue.mockImplementation(function() {
       this.$destroy = $destroy;
       this.$el = { innerHTML: "" };
     });
 
-    props = { name: "test-app" };
+    props = { name: "test-app", errorHandler: () => {} };
 
     $destroy = jest.fn();
   });
@@ -118,6 +119,7 @@ describe("single-spa-vue", () => {
       .then(() => {
         expect(Vue).toHaveBeenCalledWith({
           data: {
+            errorHandler: props.errorHandler,
             name: "test-app"
           },
           el: `#my-custom-el-2 .single-spa-container`
@@ -151,6 +153,7 @@ describe("single-spa-vue", () => {
       .then(() => {
         expect(Vue).toHaveBeenCalledWith({
           data: {
+            errorHandler: props.errorHandler,
             name: "test-app"
           },
           el: `#${htmlId} .single-spa-container`
