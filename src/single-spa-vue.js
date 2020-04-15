@@ -38,9 +38,9 @@ export default function singleSpaVue(userOpts) {
     );
   }
 
-  opts.Vue.config.errorHandler = function (error, vm, info) {
+  opts.Vue.config.errorHandler = function(error, vm, info) {
     errorHandler(error, {
-      context: info,
+      context: info
     });
   };
 
@@ -57,9 +57,10 @@ export default function singleSpaVue(userOpts) {
 }
 
 function bootstrap(opts, mountedInstances, props) {
-  if (typeof props.errorHandler !== 'function') {
-    console.log(typeof props.errorHandler);
-    return Promise.reject(`single-spa-vue: an error handler for vuejs application '${props.name}' is not a function`);
+  if (typeof props.errorHandler !== "function") {
+    return Promise.reject(
+      `single-spa-vue: an error handler for vuejs application '${props.name}' is not a function`
+    );
   }
 
   errorHandler = props.errorHandler;
