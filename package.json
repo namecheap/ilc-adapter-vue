@@ -1,10 +1,10 @@
 {
-  "name": "single-spa-vue",
+  "name": "ilc-adapter-vue",
   "version": "1.8.2",
-  "description": "a single-spa plugin for vue.js applications",
+  "description": "Adapter for Vue.js Micro Frontends that are run inside ILC",
   "main": "lib/single-spa-vue.js",
   "scripts": {
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "npm build",
     "build": "rimraf lib && rollup -c",
     "test": "jest",
     "prettier": "prettier --write './**'",
@@ -12,12 +12,12 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && concurrently -n yarn:test yarn:lint"
+      "pre-commit": "pretty-quick --staged && concurrently -n npm:test npm:lint"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/single-spa/single-spa-vue.git"
+    "url": "git+https://github.com/namecheap/ilc-adapter-vue.git"
   },
   "files": [
     "lib",
@@ -33,12 +33,11 @@
     "app",
     "spa"
   ],
-  "author": "single-spa core team",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/single-spa/single-spa-vue/issues"
+    "url": "https://github.com/namecheap/ilc-adapter-vue/issues"
   },
-  "homepage": "https://github.com/single-spa/single-spa-vue#readme",
+  "homepage": "https://github.com/namecheap/ilc-adapter-vue#readme",
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
