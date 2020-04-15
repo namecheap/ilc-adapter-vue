@@ -7,6 +7,8 @@ const defaultOpts = {
   template: null
 };
 
+let errorHandler = null;
+
 export default function singleSpaVue(userOpts) {
   if (typeof userOpts !== "object") {
     throw new Error(`single-spa-vue requires a configuration object`);
@@ -36,6 +38,12 @@ export default function singleSpaVue(userOpts) {
     );
   }
 
+  opts.Vue.config.errorHandler = function(error, vm, info) {
+    errorHandler(error, {
+      context: info
+    });
+  };
+
   // Just a shared object to store the mounted object state
   // key - name of single-spa app, since it is unique
   let mountedInstances = {};
@@ -48,7 +56,15 @@ export default function singleSpaVue(userOpts) {
   };
 }
 
-function bootstrap(opts) {
+function bootstrap(opts, mountedInstances, props) {
+  if (typeof props.errorHandler !== "function") {
+    return Promise.reject(
+      `single-spa-vue: an error handler for vuejs application '${props.name}' is not a function`
+    );
+  }
+
+  errorHandler = props.errorHandler;
+
   if (opts.loadRootComponent) {
     return opts.loadRootComponent().then(root => (opts.rootComponent = root));
   } else {
@@ -60,8 +76,10 @@ function mount(opts, mountedInstances, props) {
   const instance = {};
   return Promise.resolve().then(() => {
     const appOptions = { ...opts.appOptions };
-    if (props.domElement && !appOptions.el) {
+    if (props.domElement) {
       appOptions.el = props.domElement;
+    } else if (props.domElementGetter) {
+      appOptions.el = props.domElementGetter();
     }
 
     let domEl;

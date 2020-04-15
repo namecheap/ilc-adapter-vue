@@ -8,13 +8,14 @@ describe("single-spa-vue", () => {
 
   beforeEach(() => {
     Vue = jest.fn();
+    Vue.config = {};
 
     Vue.mockImplementation(function() {
       this.$destroy = $destroy;
       this.$el = { innerHTML: "" };
     });
 
-    props = { name: "test-app" };
+    props = { name: "test-app", errorHandler: () => {} };
 
     $destroy = jest.fn();
   });
@@ -118,6 +119,7 @@ describe("single-spa-vue", () => {
       .then(() => {
         expect(Vue).toHaveBeenCalledWith({
           data: {
+            errorHandler: props.errorHandler,
             name: "test-app"
           },
           el: `#my-custom-el-2 .single-spa-container`
@@ -126,6 +128,48 @@ describe("single-spa-vue", () => {
       .then(() => {
         expect(
           document.querySelector(`#my-custom-el-2 .single-spa-container`)
+        ).toBeTruthy();
+        domEl.remove();
+      });
+  });
+
+  it(`uses the domElementGetter if provided, and wraps the single-spa application in a container div`, () => {
+    const domEl = Object.assign(document.createElement("div"), {
+      id: "my-custom-el-3"
+    });
+
+    document.body.appendChild(domEl);
+
+    const domElementGetter = () => domEl;
+    const myProps = Object.assign({ domElementGetter }, props);
+
+    const lifecycles = new singleSpaVue({
+      Vue,
+      appOptions: {
+        el: domEl
+      }
+    });
+
+    expect(
+      document.querySelector(`#my-custom-el-2 .single-spa-container`)
+    ).toBe(null);
+
+    return lifecycles
+      .bootstrap(myProps)
+      .then(() => lifecycles.mount(myProps))
+      .then(() => {
+        expect(Vue).toHaveBeenCalledWith({
+          data: {
+            domElementGetter,
+            errorHandler: myProps.errorHandler,
+            name: "test-app"
+          },
+          el: `#my-custom-el-3 .single-spa-container`
+        });
+      })
+      .then(() => {
+        expect(
+          document.querySelector(`#my-custom-el-3 .single-spa-container`)
         ).toBeTruthy();
         domEl.remove();
       });
@@ -151,6 +195,7 @@ describe("single-spa-vue", () => {
       .then(() => {
         expect(Vue).toHaveBeenCalledWith({
           data: {
+            errorHandler: props.errorHandler,
             name: "test-app"
           },
           el: `#${htmlId} .single-spa-container`
