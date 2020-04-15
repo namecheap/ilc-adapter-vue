@@ -1,6 +1,6 @@
 {
   "name": "ilc-adapter-vue",
-  "version": "1.8.3",
+  "version": "1.9.0",
   "description": "Adapter for Vue.js Micro Frontends that are run inside ILC",
   "main": "lib/single-spa-vue.js",
   "scripts": {
