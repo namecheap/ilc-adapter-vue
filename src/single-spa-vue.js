@@ -44,8 +44,24 @@ export default function singleSpaVue(userOpts) {
     });
   };
 
-  if (opts.appOptions.router) {
-    opts._startRoute = opts.appOptions.router.history.current;
+  const { router } = opts.appOptions;
+  if (router) {
+    if (
+      !router.history ||
+      !router.history.current ||
+      typeof router.history.updateRoute !== "function"
+    ) {
+      console.warn(`
+        VueRouter should has HTML5History instance. Looks like something was changed under the hood. 
+        So probably the current mounting will render previous route that was rendered before unmount.
+        Updating route ensured "clean start" for every Vue app mount, with the help of "router.history.updateRoute(startRoute);"
+      `);
+    } else {
+      const startRoute = router.history.current;
+      opts._cleanHistory = () => {
+        router.history.updateRoute(startRoute);
+      };
+    }
   }
 
   // Just a shared object to store the mounted object state
@@ -79,11 +95,7 @@ function bootstrap(opts, mountedInstances, props) {
 function mount(opts, mountedInstances, props) {
   const instance = {};
   return Promise.resolve().then(() => {
-    // It ensures "clean start" for every Vue app mount
-    // Otherwise it would first attempt to render route that was rendered before unmount
-    if (opts._startRoute) {
-      opts.appOptions.router.history.updateRoute(opts._startRoute);
-    }
+    opts._cleanHistory && opts._cleanHistory();
 
     const appOptions = { ...opts.appOptions };
     if (props.domElement) {

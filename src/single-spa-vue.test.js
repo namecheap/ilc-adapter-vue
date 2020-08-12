@@ -420,4 +420,44 @@ describe("single-spa-vue", () => {
         return unmount(obj2);
       });
   });
+
+  it(`cleans router before mounting`, () => {
+    const current = {};
+    const updateRoute = jest.fn();
+    const opts = {
+      Vue,
+      appOptions: {
+        router: {
+          history: { current, updateRoute }
+        }
+      }
+    };
+
+    const lifecycles = new singleSpaVue(opts);
+
+    return lifecycles.mount(props).then(() => {
+      expect(updateRoute).toHaveBeenCalled();
+    });
+  });
+
+  it(`cleans router before mounting`, () => {
+    const opts = {
+      Vue,
+      appOptions: {
+        router: {}
+      }
+    };
+
+    const spy = jest.spyOn(console, "warn").mockImplementation();
+    const lifecycles = new singleSpaVue(opts);
+
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(
+      spy.mock.calls[0][0].includes(
+        "VueRouter should has HTML5History instance"
+      )
+    ).toBeTruthy();
+
+    spy.mockRestore();
+  });
 });
