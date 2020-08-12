@@ -44,6 +44,8 @@ export default function singleSpaVue(userOpts) {
     });
   };
 
+  opts._startRoute = opts.appOptions.router.history.current;
+
   // Just a shared object to store the mounted object state
   // key - name of single-spa app, since it is unique
   let mountedInstances = {};
@@ -75,6 +77,10 @@ function bootstrap(opts, mountedInstances, props) {
 function mount(opts, mountedInstances, props) {
   const instance = {};
   return Promise.resolve().then(() => {
+    // It ensures "clean start" for every Vue app mount
+    // Otherwise it would first attempt to render route that was rendered before unmount
+    opts.appOptions.router.history.updateRoute(opts._startRoute);
+
     const appOptions = { ...opts.appOptions };
     if (props.domElement) {
       appOptions.el = props.domElement;
